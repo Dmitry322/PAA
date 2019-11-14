@@ -154,11 +154,12 @@ Nx=str2double(get(handles.edit4, 'string'));
 Ny=str2double(get(handles.edit1, 'string'));
 dx=str2double(get(handles.edit2, 'string'));  
 dy=str2double(get(handles.edit3, 'string'));
-    if get(handles.popupmenu2,'Value')==2
-        abs=-100*dx:0.5*dx:100*dx;
-    elseif get(handles.popupmenu2,'Value')==1
-        abs=-100*dx:dx:100*dx;
-    end
+%     if get(handles.popupmenu2,'Value')==2
+%         abs=-100*dx:0.5*dx:100*dx;
+%     elseif get(handles.popupmenu2,'Value')==1
+%         abs=-100*dx:dx:100*dx;
+%     end
+abs=-100*dx:dx:100*dx;
 ord=-100*dy:dy:100*dy;
 figure('Units','normalized','Position',[0.5 0 0.50 0.92]);
 fig=gcf;
@@ -349,7 +350,7 @@ function clear_Callback(hObject, eventdata, handles)
 % hObject    handle to clear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global fig a position ax dx dy count
+global fig a position ax dx dy count absclattice ordilattice 
 set(0,'currentfigure', fig);
 title({'Выделите нужные для удаления элементы';'и нажмите любую кнопку'});
 brush on
@@ -369,11 +370,12 @@ dd = setdiff(position,arfordel,'rows');
 position=rot90(dd, 3);
 
 clf(gcf);
-if get(handles.popupmenu2,'Value')==2
-    abs=-100*dx:0.5*dx:100*dx;
-elseif get(handles.popupmenu2,'Value')==1
-    abs=-100*dx:dx:100*dx;
-end
+% if get(handles.popupmenu2,'Value')==2
+%     abs=-100*dx:0.5*dx:100*dx;
+% elseif get(handles.popupmenu2,'Value')==1
+%     abs=-100*dx:dx:100*dx;
+% end
+abs=-100*dx:dx:100*dx;
 ord=-100*dy:dy:100*dy;
 axis(ax);
 for i=1:size(ord,2)
@@ -386,6 +388,20 @@ for i=1:size(abs,2)
     line(x,ord)
     hold on
 end
+
+            if get(handles.checkbox1, 'Value')==1
+                for i=1:size(ordilattice,2)
+                    ylattice(1:length(absclattice))=ordilattice(i);
+                    line(absclattice,ylattice,'Color','black');
+                    hold on
+                end
+                for i=1:size(absclattice,2)
+                    xlattice(1:length(ordilattice))=absclattice(i);
+                    line(xlattice,ordilattice,'Color','black');
+                    hold on
+                end
+            end
+
 a=plot(position(1,:),position(2,:),'o','color','r', 'MarkerFaceColor', 'w');
 assignin('base','x',position(1,:));
 assignin('base','y',position(2,:));
@@ -469,7 +485,7 @@ function uibuttongroup1_SelectionChangedFcn(hObject, eventdata, handles)
 % hObject    handle to the selected object in uibuttongroup1 
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global fig Nx Ny dx dy count position stop a ax
+global fig Nx Ny dx dy count position stop a ax dxlattice dylattice absclattice ordilattice
 switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
     case 'radiobutton1'
         set(handles.save,'Enable','on');
@@ -528,8 +544,10 @@ switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
                 clear dxlattice dylattice abslattice ordlattice xlattice ylattice
                 dxlattice=Nx*dx;
                 dylattice=Ny*dy;
-                abslattice=-10*dxlattice+point(1):dxlattice:10*dxlattice+point(1);
-                ordlattice=-10*dylattice+point(2):dylattice:10*dylattice+point(2);
+                abslattice=fix(-100/Nx)*dxlattice+point(1):dxlattice:fix(100/Nx)*dxlattice+point(1);               
+                ordlattice=fix(-100/Ny)*dylattice+point(2):dylattice:fix(100/Ny)*dylattice+point(2);
+                absclattice=abslattice;
+                ordilattice=ordlattice;
                 for i=1:size(ordlattice,2)
                     ylattice(1:length(abslattice))=ordlattice(i);
                     line(abslattice,ylattice,'Color','black');
@@ -608,6 +626,19 @@ switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
                 x(1:length(ord))=absc(i);
                 line(x,ord)
                 hold on
+            end
+            
+            if get(handles.checkbox1, 'Value')==1
+                for i=1:size(ordilattice,2)
+                    ylattice(1:length(absclattice))=ordilattice(i);
+                    line(absclattice,ylattice,'Color','black');
+                    hold on
+                end
+                for i=1:size(absclattice,2)
+                    xlattice(1:length(ordilattice))=absclattice(i);
+                    line(xlattice,ordilattice,'Color','black');
+                    hold on
+                end
             end
             
             a=plot(position(1,:),position(2,:),'o','color','r', 'MarkerFaceColor', 'w');
@@ -689,7 +720,20 @@ switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
                 line(x,ord)
                 hold on
             end
-
+            
+            if get(handles.checkbox1, 'Value')==1
+                for i=1:size(ordilattice,2)
+                    ylattice(1:length(absclattice))=ordilattice(i);
+                    line(absclattice,ylattice,'Color','black');
+                    hold on
+                end
+                for i=1:size(absclattice,2)
+                    xlattice(1:length(ordilattice))=absclattice(i);
+                    line(xlattice,ordilattice,'Color','black');
+                    hold on
+                end
+            end
+            
             a=plot(position(1,:),position(2,:),'o','color','r', 'MarkerFaceColor', 'w');
             delete(findall(gcf,'Type','hggroup'));
         end
