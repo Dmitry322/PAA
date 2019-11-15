@@ -389,18 +389,18 @@ for i=1:size(abs,2)
     hold on
 end
 
-            if get(handles.checkbox1, 'Value')==1
-                for i=1:size(ordilattice,2)
-                    ylattice(1:length(absclattice))=ordilattice(i);
-                    line(absclattice,ylattice,'Color','black');
-                    hold on
-                end
-                for i=1:size(absclattice,2)
-                    xlattice(1:length(ordilattice))=absclattice(i);
-                    line(xlattice,ordilattice,'Color','black');
-                    hold on
-                end
-            end
+if get(handles.checkbox1, 'Value')==1
+    for i=1:size(ordilattice,2)
+        ylattice(1:length(absclattice))=ordilattice(i);
+        line(absclattice,ylattice,'Color','black');
+        hold on
+    end
+    for i=1:size(absclattice,2)
+        xlattice(1:length(ordilattice))=absclattice(i);
+        line(xlattice,ordilattice,'Color','black');
+        hold on
+    end
+end
 
 a=plot(position(1,:),position(2,:),'o','color','r', 'MarkerFaceColor', 'w');
 assignin('base','x',position(1,:));
@@ -412,12 +412,12 @@ function save_Callback(hObject, eventdata, handles)
 % hObject    handle to save (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global position dx dy
+global position
 %filename=get(handles.filename, 'string');
 filename=uiputfile('PAA.mat');
 x=position(1,:);
 y=position(2,:);
-save(filename ,'x', 'y', 'dx', 'dy');
+save(filename ,'x', 'y');
 
 
 
@@ -458,18 +458,24 @@ filename=uigetfile;
 figure('Units','Pixels','Position',[961 0 959 999]);
 fig=gcf;
 load(filename);
-abs=-100*dx:dx:100*dx;
+i=1;
+while y(i)==y(1)
+    i=i+1;
+end
+dy=abs(y(i)-y(1));
+dx=abs(x(2)-x(1));
+absc=-100*dx:dx:100*dx;
 ord=-100*dy:dy:100*dy;
 axis( [ -20*dx, 20*dx, -20*dy, 20*dy ] );
 ax=axis;
 
 for i=1:size(ord,2)
-   yg(1:length(abs))=ord(i);
-   line(abs,yg);
+   yg(1:length(absc))=ord(i);
+   line(absc,yg);
    hold on
 end
-for i=1:size(abs,2)
-    xg(1:length(ord))=abs(i);
+for i=1:size(absc,2)
+    xg(1:length(ord))=absc(i);
     line(xg,ord)
     hold on
 end
