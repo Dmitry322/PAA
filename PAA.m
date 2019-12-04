@@ -147,7 +147,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global fig Nx Ny dx dy count position ax
+global fig Nx Ny dx dy count position ax smgrv smgrh
 count=0;
 position=[];
 Nx=str2double(get(handles.edit4, 'string'));
@@ -159,22 +159,30 @@ dy=str2double(get(handles.edit3, 'string'));
 %     elseif get(handles.popupmenu2,'Value')==1
 %         abs=-100*dx:dx:100*dx;
 %     end
-abs=-100*dx:dx:100*dx;
+absc=-100*dx:dx:100*dx;
 ord=-100*dy:dy:100*dy;
 figure('Units','normalized','Position',[0.5 0 0.50 0.92]);
 fig=gcf;
 axis( [ -20*dx, 20*dx, -20*dy, 20*dy ] );
 ax=axis;
-for i=1:size(ord,2)
-   y(1:length(abs))=ord(i);
-   line(abs,y);
-   hold on
-end
-for i=1:size(abs,2)
-    x(1:length(ord))=abs(i);
-    line(x,ord)
-    hold on
-end
+
+ 
+% for i=1:size(ord,2)
+%    y(1:length(absc))=ord(i);
+%    line(absc,y);
+%    hold on
+% end
+% for i=1:size(absc,2)
+%     x(1:length(ord))=absc(i);
+%     line(x,ord)
+%     hold on
+% end
+[xsmgr, ysmgr] = meshgrid(absc, ord);
+XSMGR=rot90(xsmgr,3);
+YSMGR=rot90(ysmgr,3);
+smgrv=line(xsmgr, ysmgr, 'color', 'b');
+smgrh=line(XSMGR, YSMGR, 'color', 'b');
+axis(ax)
 
 
 function edit4_Callback(hObject, eventdata, handles)
@@ -350,7 +358,7 @@ function clear_Callback(hObject, eventdata, handles)
 % hObject    handle to clear (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global fig a position ax dx dy count absclattice ordilattice 
+global fig a position ax dx dy count absclattice ordilattice smgrv smgrh lgrv lgrh
 set(0,'currentfigure', fig);
 title({'Выделите нужные для удаления элементы';'и нажмите любую кнопку'});
 brush on
@@ -368,39 +376,35 @@ arfordel=rot90(arfordel);
 position=rot90(position);
 dd = setdiff(position,arfordel,'rows');
 position=rot90(dd, 3);
-
+ax=axis;
 clf(gcf);
-% if get(handles.popupmenu2,'Value')==2
-%     abs=-100*dx:0.5*dx:100*dx;
-% elseif get(handles.popupmenu2,'Value')==1
-%     abs=-100*dx:dx:100*dx;
-% end
-abs=-100*dx:dx:100*dx;
+absc=-100*dx:dx:100*dx;
 ord=-100*dy:dy:100*dy;
-axis(ax);
-for i=1:size(ord,2)
-    y(1:length(abs))=ord(i);
-    line(abs,y);
-    hold on
-end
-for i=1:size(abs,2)
-    x(1:length(ord))=abs(i);
-    line(x,ord)
-    hold on
-end
 
-if get(handles.checkbox1, 'Value')==1
-    for i=1:size(ordilattice,2)
-        ylattice(1:length(absclattice))=ordilattice(i);
-        line(absclattice,ylattice,'Color','black');
-        hold on
-    end
-    for i=1:size(absclattice,2)
-        xlattice(1:length(ordilattice))=absclattice(i);
-        line(xlattice,ordilattice,'Color','black');
-        hold on
-    end
-end
+[xsmgr, ysmgr] = meshgrid(absc, ord);
+XSMGR=rot90(xsmgr,3);
+YSMGR=rot90(ysmgr,3);
+smgrv=line(xsmgr, ysmgr, 'color', 'b');
+smgrh=line(XSMGR, YSMGR, 'color', 'b');
+hold on
+% for i=1:size(ord,2)
+%     y(1:length(abs))=ord(i);
+%     line(abs,y);
+%     hold on
+% end
+% for i=1:size(abs,2)
+%     x(1:length(ord))=abs(i);
+%     line(x,ord)
+%     hold on
+% end
+
+[xlgr, ylgr] = meshgrid(absclattice, ordilattice);
+XlGR=rot90(xlgr,3);
+YlGR=rot90(ylgr,3);
+lgrv=line(xlgr, ylgr, 'color', 'k', 'LineWidth', 2);
+lgrh=line(XlGR, YlGR, 'color', 'k', 'LineWidth', 2);
+hold on
+axis(ax);
 
 a=plot(position(1,:),position(2,:),'o','color','r', 'MarkerFaceColor', 'w');
 assignin('base','x',position(1,:));
@@ -449,7 +453,7 @@ function load_Callback(hObject, eventdata, handles)
 % hObject    handle to load (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global position count a fig ax
+global position count a fig ax smgrv smgrh
 set(handles.pushbutton4,'Enable','off');
 set(handles.clear,'Enable','off');
 count=0;
@@ -469,16 +473,22 @@ ord=-100*dy:dy:100*dy;
 axis( [ -20*dx, 20*dx, -20*dy, 20*dy ] );
 ax=axis;
 
-for i=1:size(ord,2)
-   yg(1:length(absc))=ord(i);
-   line(absc,yg);
-   hold on
-end
-for i=1:size(absc,2)
-    xg(1:length(ord))=absc(i);
-    line(xg,ord)
-    hold on
-end
+[xsmgr, ysmgr] = meshgrid(absc, ord);
+XSMGR=rot90(xsmgr,3);
+YSMGR=rot90(ysmgr,3);
+smgrv=line(xsmgr, ysmgr, 'color', 'b');
+smgrh=line(XSMGR, YSMGR, 'color', 'b');
+hold on
+% for i=1:size(ord,2)
+%    yg(1:length(absc))=ord(i);
+%    line(absc,yg);
+%    hold on
+% end
+% for i=1:size(absc,2)
+%     xg(1:length(ord))=absc(i);
+%     line(xg,ord)
+%     hold on
+% end
 
 position(1,:)=x;
 position(2,:)=y;
@@ -491,7 +501,7 @@ function uibuttongroup1_SelectionChangedFcn(hObject, eventdata, handles)
 % hObject    handle to the selected object in uibuttongroup1 
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global fig Nx Ny dx dy count position stop a ax dxlattice dylattice absclattice ordilattice
+global fig Nx Ny dx dy count position stop a ax dxlattice dylattice absclattice ordilattice lgrh lgrv
 switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
     case 'radiobutton1'
         set(handles.save,'Enable','on');
@@ -522,31 +532,32 @@ switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
                 pos=rectsub(first,[Nx,Ny],[dx,dy]);
             end
             absc=-100*dx:dx:100*dx;
-                        
+        
             for i=1:size(pos,2)
                 count=count+1;
                 position(1,count)=pos(1,i);
                 position(2,count)=pos(2,i);
             end
             
-            clf(gcf);
-            %abs=-100*dx:0.5*dx:100*dx;
-            ord=-100*dy:dy:100*dy;
-            axis(ax);
-            
-            for i=1:size(ord,2)
-                y(1:length(absc))=ord(i);
-                line(absc,y);
-                hold on
-            end
-            for i=1:size(absc,2)
-                x(1:length(ord))=absc(i);
-                line(x,ord)
-                hold on
-            end
-            
+%             clf(gcf);
+%             %abs=-100*dx:0.5*dx:100*dx;
+%             ord=-100*dy:dy:100*dy;
+%             axis(ax);
+% 
+%             for i=1:size(ord,2)
+%                 y(1:length(absc))=ord(i);
+%                 line(absc,y);
+%                 hold on
+%             end
+%             for i=1:size(absc,2)
+%                 x(1:length(ord))=absc(i);
+%                 line(x,ord)
+%                 hold on
+%             end
             
             if get(handles.checkbox1, 'Value')==0
+                delete (lgrv)
+                delete (lgrh)
                 clear dxlattice dylattice abslattice ordlattice xlattice ylattice
                 dxlattice=Nx*dx;
                 dylattice=Ny*dy;
@@ -554,27 +565,42 @@ switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
                 ordlattice=fix(-100/Ny)*dylattice+point(2):dylattice:fix(100/Ny)*dylattice+point(2);
                 absclattice=abslattice;
                 ordilattice=ordlattice;
-                for i=1:size(ordlattice,2)
-                    ylattice(1:length(abslattice))=ordlattice(i);
-                    line(abslattice,ylattice,'Color','black');
-                    hold on
-                end
-                for i=1:size(abslattice,2)
-                    xlattice(1:length(ordlattice))=abslattice(i);
-                    line(xlattice,ordlattice,'Color','black')
-                    hold on
-                end
+                
+                [xlgr, ylgr] = meshgrid(abslattice, ordlattice);
+                XlGR=rot90(xlgr,3);
+                YlGR=rot90(ylgr,3);
+                lgrv=line(xlgr, ylgr, 'color', 'k', 'LineWidth', 2);
+                lgrh=line(XlGR, YlGR, 'color', 'k', 'LineWidth', 2);
+                hold on
+%                 for i=1:size(ordlattice,2)
+%                     ylattice(1:length(abslattice))=ordlattice(i);
+%                     line(abslattice,ylattice,'Color','black');
+%                     hold on
+%                 end
+%                 for i=1:size(abslattice,2)
+%                     xlattice(1:length(ordlattice))=abslattice(i);
+%                     line(xlattice,ordlattice,'Color','black')
+%                     hold on
+%                 end
             else
-                for i=1:size(ordlattice,2)
-                    ylattice(1:length(abslattice))=ordlattice(i);
-                    line(abslattice,ylattice,'Color','black');
-                    hold on
-                end
-                for i=1:size(abslattice,2)
-                    xlattice(1:length(ordlattice))=abslattice(i);
-                    line(xlattice,ordlattice,'Color','black')
-                    hold on
-                end
+                delete (lgrv)
+                delete (lgrh)
+                [xlgr, ylgr] = meshgrid(absclattice, ordilattice);
+                XlGR=rot90(xlgr,3);
+                YlGR=rot90(ylgr,3);
+                lgrv=line(xlgr, ylgr, 'color', 'k', 'LineWidth', 2);
+                lgrh=line(XlGR, YlGR, 'color', 'k', 'LineWidth', 2);
+                hold on
+%                 for i=1:size(ordlattice,2)
+%                     ylattice(1:length(abslattice))=ordlattice(i);
+%                     line(abslattice,ylattice,'Color','black');
+%                     hold on
+%                 end
+%                 for i=1:size(abslattice,2)
+%                     xlattice(1:length(ordlattice))=abslattice(i);
+%                     line(xlattice,ordlattice,'Color','black')
+%                     hold on
+%                 end
             end
 
             
@@ -619,34 +645,21 @@ switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
             count=count+1;
             position(1,count)=point(1);
             position(2,count)=point(2);
-            clf(gcf);
-            ord=-100*dy:dy:100*dy;
-            axis(ax);
-            
-            for i=1:size(ord,2)
-                y(1:length(absc))=ord(i);
-                line(absc,y);
-                hold on
-            end
-            for i=1:size(absc,2)
-                x(1:length(ord))=absc(i);
-                line(x,ord)
-                hold on
-            end
-            
-            if get(handles.checkbox1, 'Value')==1
-                for i=1:size(ordilattice,2)
-                    ylattice(1:length(absclattice))=ordilattice(i);
-                    line(absclattice,ylattice,'Color','black');
-                    hold on
-                end
-                for i=1:size(absclattice,2)
-                    xlattice(1:length(ordilattice))=absclattice(i);
-                    line(xlattice,ordilattice,'Color','black');
-                    hold on
-                end
-            end
-            
+%             clf(gcf);
+%             ord=-100*dy:dy:100*dy;
+%             axis(ax);
+%             
+%             for i=1:size(ord,2)
+%                 y(1:length(absc))=ord(i);
+%                 line(absc,y);
+%                 hold on
+%             end
+%             for i=1:size(absc,2)
+%                 x(1:length(ord))=absc(i);
+%                 line(x,ord)
+%                 hold on
+%             end
+                        
             a=plot(position(1,:),position(2,:),'o','color','r', 'MarkerFaceColor', 'w');
             delete(findall(gcf,'Type','hggroup'));
         end
@@ -713,32 +726,20 @@ switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
                 position(2,count)=C(2,i);
             end 
 
-            clf(gcf);
-            ord=-100*dy:dy:100*dy;
-            axis(ax);
-            for i=1:size(ord,2)
-                y(1:length(absc))=ord(i);
-                line(absc,y);
-                hold on
-            end
-            for i=1:size(absc,2)
-                x(1:length(ord))=absc(i);
-                line(x,ord)
-                hold on
-            end
+%             clf(gcf);
+%             ord=-100*dy:dy:100*dy;
+%             axis(ax);
+%             for i=1:size(ord,2)
+%                 y(1:length(absc))=ord(i);
+%                 line(absc,y);
+%                 hold on
+%             end
+%             for i=1:size(absc,2)
+%                 x(1:length(ord))=absc(i);
+%                 line(x,ord)
+%                 hold on
+%             end
             
-            if get(handles.checkbox1, 'Value')==1
-                for i=1:size(ordilattice,2)
-                    ylattice(1:length(absclattice))=ordilattice(i);
-                    line(absclattice,ylattice,'Color','black');
-                    hold on
-                end
-                for i=1:size(absclattice,2)
-                    xlattice(1:length(ordilattice))=absclattice(i);
-                    line(xlattice,ordilattice,'Color','black');
-                    hold on
-                end
-            end
             
             a=plot(position(1,:),position(2,:),'o','color','r', 'MarkerFaceColor', 'w');
             delete(findall(gcf,'Type','hggroup'));
